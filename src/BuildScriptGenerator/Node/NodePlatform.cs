@@ -87,7 +87,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string Name => NodeConstants.NodeJsName;
 
         /// <inheritdoc/>
-        public IEnumerable<string> SupportedVersions => _nodeVersionProvider.SupportedNodeVersions;
+        public IEnumerable<string> SupportedVersions
+        {
+            get
+            {
+                var versionInfo = _nodeVersionProvider.GetVersionInfo();
+                return versionInfo.SupportedVersions;
+            }
+        }
 
         /// <inheritdoc/>
         public LanguageDetectorResult Detect(RepositoryContext context)
