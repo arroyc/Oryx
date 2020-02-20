@@ -266,21 +266,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 toolsToVersion[ToolNameConstants.NodeName] = targetPlatformVersion;
             }
-
-            var packageJson = GetPackageJsonObject(sourceRepo, _logger);
-            if (packageJson != null)
-            {
-                string npmVersion = GetNpmVersion(packageJson);
-                _logger.LogDebug("GetNpmVersion returned {npmVersion}", npmVersion);
-                if (!string.IsNullOrEmpty(npmVersion))
-                {
-                    toolsToVersion[ToolNameConstants.NpmName] = npmVersion;
-                }
-            }
-            else
-            {
-                _logger.LogDebug($"{NodeConstants.PackageJsonFileName} is null; skipping setting {ToolNameConstants.NpmName} tool");
-            }
         }
 
         /// <inheritdoc/>
@@ -460,31 +445,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 buildProperties[NodeManifestFilePropertyKeys.OutputDirPath] = outputDirPath;
             }
-        }
-
-        private string GetNpmVersion(dynamic packageJson)
-        {
-            string npmVersionRange = packageJson?.engines?.npm?.Value;
-            if (npmVersionRange == null)
-            {
-                npmVersionRange = _nodeScriptGeneratorOptions.NpmDefaultVersion;
-            }
-
-            string npmVersion = null;
-            if (!string.IsNullOrWhiteSpace(npmVersionRange))
-            {
-                var supportedNpmVersions = _nodeVersionProvider.SupportedNpmVersions;
-                npmVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(npmVersionRange, supportedNpmVersions);
-                if (string.IsNullOrEmpty(npmVersion))
-                {
-                    _logger.LogWarning(
-                        "User requested npm version {npmVersion} but it wasn't resolved",
-                        npmVersionRange);
-                    return null;
-                }
-            }
-
-            return npmVersion;
         }
     }
 }

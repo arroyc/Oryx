@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Oryx.Common;
