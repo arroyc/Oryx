@@ -54,8 +54,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        public void GeneratesScript_AndBuilds_WithoutComposerFile()
+        [Theory]
+        [InlineData(PhpVersions.Php74Version)]
+        [InlineData(PhpVersions.Php73Version)]
+        [InlineData(PhpVersions.Php72Version)]
+        [InlineData(PhpVersions.Php70Version)]
+        [InlineData(PhpVersions.Php56Version)]
+        public void GeneratesScript_AndBuilds_WithoutComposerFile(string phpVersion)
         {
             // Arrange
             var appName = "twig-example";
@@ -65,7 +70,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform php --platform-version {PhpVersions.Php73Version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform php --platform-version {phpVersion}")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -83,10 +88,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP executable: /opt/php/{PhpVersions.Php73Version}/bin/php", result.StdOut);
+                    Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
                     Assert.Contains($"not running 'composer install'", result.StdOut);
                     Assert.Contains(
-                       $"{PhpConstants.PhpName}_version=\"{PhpVersions.Php73Version}\"",
+                       $"{PhpConstants.PhpName}_version=\"{phpVersion}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());
